@@ -55,6 +55,7 @@ dev_dependencies:
   # Code generation
   build_runner: ^2.4.13
   json_serializable: ^6.6.1
+  injectable_generator: ^2.5.3
 
   # Testing and linting
   flutter_test:

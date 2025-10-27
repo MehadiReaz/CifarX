@@ -8,7 +8,7 @@ class LoginParams extends Equatable {
   const LoginParams({
     required this.username,
     required this.password,
-    this.expiresInMins = 1,
+    this.expiresInMins = 60,
   });
 
   @override

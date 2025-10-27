@@ -36,6 +36,7 @@ class AuthRepositoryImpl implements AuthRepository {
       _logger.d('Login Response: ${httpResponse.data}');
       final requestUri = httpResponse.response.requestOptions.uri;
       _logger.d('API URL (login): $requestUri');
+      _logger.d('Login Request: ${loginRequest.toJson()}');
 
       if (httpResponse.response.statusCode == HttpStatus.ok) {
         final userModel = UserModel.fromJson(httpResponse.data);

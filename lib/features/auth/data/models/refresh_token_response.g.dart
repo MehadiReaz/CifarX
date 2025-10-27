@@ -7,15 +7,15 @@ part of 'refresh_token_response.dart';
 // **************************************************************************
 
 RefreshTokenResponse _$RefreshTokenResponseFromJson(
-        Map<String, dynamic> json) =>
-    RefreshTokenResponse(
-      accessToken: json['accessToken'] as String,
-      refreshToken: json['refreshToken'] as String,
-    );
+  Map<String, dynamic> json,
+) => RefreshTokenResponse(
+  accessToken: json['accessToken'] as String,
+  refreshToken: json['refreshToken'] as String,
+);
 
 Map<String, dynamic> _$RefreshTokenResponseToJson(
-        RefreshTokenResponse instance) =>
-    <String, dynamic>{
-      'accessToken': instance.accessToken,
-      'refreshToken': instance.refreshToken,
-    };
+  RefreshTokenResponse instance,
+) => <String, dynamic>{
+  'accessToken': instance.accessToken,
+  'refreshToken': instance.refreshToken,
+};

@@ -1,5 +1,6 @@
-import 'package:dio/dio.dart';
+// features/auth/di/auth_injection.dart
 import 'package:injectable/injectable.dart';
+import 'package:dio/dio.dart';
 import '../data/data_sources/remote/login_api_service.dart';
 
 @module
