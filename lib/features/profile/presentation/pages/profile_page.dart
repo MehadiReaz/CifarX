@@ -214,50 +214,6 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEF3C7),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color(0xFFFDE047),
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: Color(0xFFCA8A04),
-                              size: 20,
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Authentication Skipped',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF92400E),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'You are using the app without authentication. Sign in to access personalized features and save your preferences.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(height: 24),
                 ] else ...[
                   // Not Authenticated State
