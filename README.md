@@ -1,4 +1,4 @@
-# cifarx
+# CifarX
 
 A simple Flutter app that fetches and displays a paginated product list from a JSON API
 

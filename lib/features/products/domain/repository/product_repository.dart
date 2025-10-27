@@ -1,18 +1,22 @@
 import 'package:cifarx/core/error/failures.dart';
-import 'package:cifarx/features/products/domain/entity/product_entity.dart';
 import 'package:fpdart/fpdart.dart';
+import '../entities/product.dart';
 
 abstract class ProductRepository {
-  Future<Either<Failure, List<ProductEntity>>> getProducts({
+  Future<Either<Failure, ProductListEntity>> getProducts({
     required int limit,
     required int skip,
+    String? sort,
+    String? order,
   });
 
-  Future<Either<Failure, List<ProductEntity>>> searchProducts({
-    required String query,
-    required int limit,
-    required int skip,
+  Future<Either<Failure, ProductListEntity>> searchProducts(
+    String query, {
+    int? limit,
+    int? skip,
+    String? sort,
+    String? order,
   });
 
-  Future<Either<Failure, ProductEntity>> getProductDetails(String productId);
+  Future<Either<Failure, ProductEntity>> getProductById(int id);
 }

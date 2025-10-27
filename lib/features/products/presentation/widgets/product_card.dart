@@ -1,194 +1,233 @@
-import 'package:cifarx/features/products/domain/entity/product_entity.dart';
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cifarx/config/theme/app_colors.dart';
+import 'package:cifarx/config/theme/app_text_styles.dart';
+import 'package:cifarx/features/products/domain/entities/product.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
-  final VoidCallback? onTap;
+  final Function(ProductEntity) onWishlistToggle;
+  final bool isWishlisted;
 
   const ProductCard({
     super.key,
     required this.product,
-    this.onTap,
+    required this.onWishlistToggle,
+    this.isWishlisted = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Product Image
-              if (product.thumbnail != null) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    product.thumbnail!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 150,
-                        width: double.infinity,
-                        color: Colors.grey[200],
-                        child: const Icon(
-                          Icons.image_not_supported,
-                          size: 50,
-                          color: Colors.grey,
+    final hasDiscount = (product.discountPercentage ?? 0) > 0;
+    final originalPrice = product.price ?? 0;
+    final discountPercentage = product.discountPercentage ?? 0;
+    final discountedPrice = hasDiscount
+        ? originalPrice - (originalPrice * discountPercentage / 100)
+        : originalPrice;
+    final isOutOfStock = (product.stock ?? 0) <= 0;
+
+    return Stack(
+      children: [
+        InkWell(
+          onTap: () {
+            // Use push to add the product details page to the navigation stack
+            // so the system/back button will return to the previous screen.
+            context.push('/product/${product.id}');
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Card(
+            elevation: 0,
+            color: AppColors.backgroundWhite,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product Image with Wishlist button
+                Stack(
+                  children: [
+                    // Product Image
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(8),
                         ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-              
-              // Product Title
-              Text(
-                product.title ?? 'No Title',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              
-              // Product Description
-              Text(
-                product.description ?? 'No Description',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 12),
-              
-              // Product Info Row
-              Row(
-                children: [
-                  // Price
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '\$${product.price?.toStringAsFixed(2) ?? '0.00'}',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[700],
+                        child: product.thumbnail != null
+                            ? Image.network(
+                                product.thumbnail!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: AppColors.greyColor,
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        color: AppColors.greyColor,
+                                      ),
+                                    ),
+                              )
+                            : Container(
+                                color: AppColors.lightGrey,
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  color: AppColors.greyColor,
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    // Wishlist Button
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () {
+                          log('Wishlist button tapped for ${product.id}');
+                          onWishlistToggle(product);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            isWishlisted
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: isWishlisted
+                                ? Colors.red
+                                : AppColors.greyColor,
+                            size: 18,
                           ),
                         ),
-                        if (product.discountPercentage != null && product.discountPercentage! > 0)
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Product Details
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 2),
+                      Text(
+                        product.title ?? 'Unnamed Product',
+                        style: AppTextStyles.productTitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        strutStyle: const StrutStyle(
+                          forceStrutHeight: true,
+                          height: 1.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Price Section
+                      Row(
+                        children: [
                           Text(
-                            '${product.discountPercentage!.toStringAsFixed(0)}% OFF',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.red,
+                            '\$${discountedPrice.toStringAsFixed(0)}',
+                            style: AppTextStyles.price,
+                          ),
+                          if (hasDiscount) ...[
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '\$${originalPrice.toStringAsFixed(0)}',
+                                style: AppTextStyles.oldPrice,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${discountPercentage.toStringAsFixed(0)}% OFF',
+                              style: AppTextStyles.discount,
+                            ),
+                          ],
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Rating Row
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF59E0B),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Icon(
+                              Icons.star,
+                              color: AppColors.backgroundWhite,
+                              size: 10,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${product.rating ?? 0}',
+                            style: const TextStyle(
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Rating and Stock
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      if (product.rating != null) ...[
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              size: 16,
-                              color: Colors.amber,
+                          const SizedBox(width: 4),
+                          Text(
+                            '(${product.reviews?.isNotEmpty == true ? product.reviews![0].rating : 0})',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.lightGrey,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              product.rating!.toStringAsFixed(1),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ],
-                      if (product.stock != null) ...[
-                        Text(
-                          'Stock: ${product.stock}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: product.stock! > 10 ? Colors.green : Colors.orange,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-              
-              // Category and Availability
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  if (product.category != null) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        product.category!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.blue[700],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  if (product.availabilityStatus != null) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _getAvailabilityColor(product.availabilityStatus!).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        product.availabilityStatus!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _getAvailabilityColor(product.availabilityStatus!),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
 
-  Color _getAvailabilityColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'in stock':
-        return Colors.green;
-      case 'low stock':
-        return Colors.orange;
-      case 'out of stock':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+        // Out of Stock Banner
+        if (isOutOfStock)
+          Positioned(
+            top: 12,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.horizontal(left: Radius.circular(4)),
+              ),
+              child: const Text(
+                'Out Of Stock',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }

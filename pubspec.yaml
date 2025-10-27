@@ -1,6 +1,7 @@
 name: cifarx
 description: "A simple Flutter app that fetches and displays a paginated product list from a JSON API"
 
+# Not publishing this package to pub.dev
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -12,28 +13,56 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Basic icons for iOS-style UI
   cupertino_icons: ^1.0.8
+
+  # State management
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
+
+  # Functional helpers (Either, Option, etc.)
   fpdart: ^1.1.1
+
+  # Navigation
   go_router: ^16.3.0
-  retrofit: ^4.4.2
-  logger: ^2.6.2  # for logging purpose
-  json_annotation: ^4.9.0
-  get_it: ^8.2.0
+
+  # Networking and API calls
   dio: ^5.9.0
+  retrofit: ^4.4.2
+  retrofit_generator: ^9.1.5
+  json_annotation: ^4.9.0
+  logger: ^2.6.2
+
+  # Dependency injection
+  get_it: ^8.2.0
+  injectable: ^2.5.2
+
+  # Fonts and visuals
+  google_fonts: ^6.3.2
+  shimmer: ^3.0.0
+
+  # Connectivity
+  connectivity_plus: ^7.0.0
+
+  # Local storage
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.5.3
+
+  # Formatting and localization
+  intl: ^0.20.2
 
 dev_dependencies:
+  # Code generation
   build_runner: ^2.4.13
   json_serializable: ^6.6.1
-  retrofit_generator: ^9.1.5
 
-
+  # Testing and linting
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^5.0.0
 
 flutter:
-
   uses-material-design: true
+
+  assets:
+    - assets/images/
